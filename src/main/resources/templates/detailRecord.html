@@ -1,0 +1,51 @@
+<div style="display: none" th:text="${model.testId}" class="testId"></div>
+<div style="display: none" th:text="${model.resultList.size()}" id="testSize"></div>
+<div  class="layui-row">
+    <div class="layui-col-md2">
+        deviceId
+    </div>
+    <div class="layui-col-md1" >
+        type
+    </div>
+    <div class="layui-col-md1">
+        cabinet
+    </div>
+    <div class="layui-col-md2">
+        lockerNumber
+    </div>
+    <div class="layui-col-md1">
+        open
+    </div>
+    <div class="layui-col-md1">
+        success
+    </div>
+    <div class="layui-col-md4" th:text="description">
+
+    </div>
+</div>
+<div class="layui-row"  th:each="result,resultStat : ${model.resultList}" th:object="${result}">
+    <div class="layui-col-md2" th:text="*{deviceId}">
+
+    </div>
+    <div class="layui-col-md1" th:text="*{type}">
+
+    </div>
+    <div class="layui-col-md1" th:text="*{cabinet}">
+
+    </div>
+    <div class="layui-col-md2" th:text="*{lockerNumber}">
+
+    </div>
+    <div class="layui-col-md1" th:text="*{open}">
+
+    </div>
+    <div class="layui-col-md1" th:if="*{success}== true">
+        <div>打开成功</div>
+    </div>
+    <div class="layui-col-md1" th:if="*{success}== false">
+        <div>打开失败</div>
+    </div>
+    <div class="layui-col-md3" th:text="*{description}">
+
+    </div>
+</div>

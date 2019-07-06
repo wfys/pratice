@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="~{fragments/header :: headInfo}">
+</head>
+<body>
+<style>
+    .mainContainer{
+        margin-top: 20px;
+    }
+    h2{
+        text-align: center;
+    }
+    body{
+        background-color: #e2e2e2;
+    }
+</style>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="layui-fluid mainContainer">
+    <div class="layui-row" style="background-color: white;padding-top: 20px;">
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <label class="layui-form-label">格子数</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="gridCount" required lay-verify="required" placeholder="请输入格子数" autocomplete="off" class="layui-input" id="gridCount">
+                </div>
+                <div class="layui-form-mid layui-word-aux">范围为1-60</div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <label class="layui-form-label">测试次数</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="times" required lay-verify="required" placeholder="请输入测试次数" autocomplete="off" class="layui-input" id="times">
+                </div>
+                <div class="layui-form-mid layui-word-aux">范围为1-60</div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <button type="button" class="layui-btn" id="testBtn">测试</button>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md7">
+            <div class="layui-card">
+                <div class="layui-card-header"><h2>本次测试结果</h2></div>
+                <div class="layui-card-body" id="card1">
+                    请选择测试......
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md5">
+            <div class="layui-card">
+                <div class="layui-card-header"><h2>本次测试概况</h2></div>
+                <div class="layui-card-body" id="card2">
+                    请选择测试......
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+    layui.use(['element', 'form','layer'], function(){
+        //var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        //var openData=[];
+        //var closeData=[];
+
+        var layer = layui.layer;
+        var setInt;
+        var gridCount=0;
+        var times=0;
+        $("#testBtn").click(function() {
+            gridCount=$("#gridCount").val()|0;
+            times=$("#times").val()|0;
+            var testId=0;
+            if(gridCount<=0||gridCount>60){
+                layer.msg('格子数不在范围1-60', {time: 5000, icon:7});
+                return;
+            }
+            if(times<=0||times>60){
+                layer.msg('测试次数不在范围', {time: 5000, icon:7});
+                return;
+            }
+            if(setInt!=null) window.clearInterval(setInt);
+            $("#card1").html("加载中......");
+            $("#card2").html("加载中......");
+            $.ajax({
+                url: "/test",
+                contentType : 'application/json',
+                data:{
+                    "gridCount":gridCount,
+                    "times":times
+                },
+                success: function(data){
+                   console.log(data);
+                    testId=data.message;
+                    setInt= window.setInterval(function () {
+                       testLoad(testId);
+                    },1500);
+                },
+                error : function() {
+                    alert("error!");
+                }
+            });
+        });
+
+        function testLoad(testId) {
+            detailFunction(testId);
+            var testSize=$("#testSize").html();
+            var size=gridCount*times;
+            console.log(testSize);
+            console.log(size);
+            console.log("-------------------");
+            if(testSize==size){
+                allFunction(testId);
+                window.clearInterval(setInt);
+
+            }
+        }
+        function detailFunction(testId) {
+            $.ajax({
+                url: "/historyDetail",
+                contentType : 'application/json',
+                data:{
+                    "testId":testId
+                },
+                success: function(data){
+                    $("#card1").html(data);
+                    allFunction(testId,this);
+
+                },
+                error : function() {
+                    alert("error!");
+                }
+            });
+        }
+        function allFunction(testId) {
+            $.ajax({
+                url: "/testSummary",
+                contentType : 'application/json',
+                data:{
+                    "testId":testId
+                },
+                success: function(data){
+                    $("#card2").html(data);
+                },
+                error : function() {
+                    alert("error!");
+                }
+            });
+        }
+
+
+
+    });
+</script>
+</body>
+</html>

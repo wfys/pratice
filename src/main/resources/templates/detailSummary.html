@@ -1,0 +1,34 @@
+<div  class="layui-row">
+    <div  class="layui-row">
+        <div class="layui-col-md5" >
+            <span>开始时间：</span><span>[[${#dates.format(test.createTime, 'yyyy-MM-dd HH:mm:ss')}]]</span>
+        </div>
+        <div class="layui-col-md4" >
+            <span>结束时间：</span><span>[[${#dates.format(test.endTime, 'yyyy-MM-dd HH:mm:ss')}]]</span>
+        </div>
+        <div class="layui-col-md3" >
+            <span>总次数：</span><span th:text="${test.gridCount * test.times}"></span>
+        </div>
+    </div>
+
+    <div  class="layui-row">
+        <div class="layui-col-md5" >
+            <span>格子数：</span><span th:text="${test.gridCount}"></span>
+        </div>
+        <div class="layui-col-md4" >
+            <span>循环次数：</span><span th:text="${test.times}"></span>
+        </div>
+        <div class="layui-col-md3" >
+            <span>总成功次数：</span><span th:text="${test.success}"></span>
+        </div>
+    </div>
+    <hr class="layui-bg-black">
+    <div  class="layui-row" th:each="girdSuccess,girdStat : ${model.girdSuccessList}">
+        <div class="layui-col-md5" >
+            <span>格子序号：</span><span th:text="${girdStat.index}"></span>
+        </div>
+        <div class="layui-col-md5" >
+            <span>格子成功次数：</span><span th:text="${girdSuccess}"></span>
+        </div>
+    </div>
+</div>

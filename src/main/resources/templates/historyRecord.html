@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="~{fragments/header :: headInfo}">
+</head>
+<body>
+<style>
+    .mainContainer{
+        margin-top: 20px;
+    }
+    h2{
+        text-align: center;
+    }
+    body{
+        background-color: #e2e2e2;
+    }
+</style>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="layui-fluid mainContainer">
+    <h1>历史记录</h1>
+    <div class="layui-collapse" lay-accordion>
+        <div class="layui-colla-item" th:each="test,testStat : ${model.testList}" >
+            <h2 class="layui-colla-title testBtn" th:attr="testId=${test.getId()}">
+                <div  class="layui-row">
+                    <div class="layui-col-md2" >
+                        <span>测试编号:</span><span>[[${test.getId()}]]</span>
+                    </div>
+                    <div class="layui-col-md4" >
+                        <span>开始时间:</span><span>[[${#dates.format(test.createTime, 'yyyy-MM-dd HH:mm:ss')}]]</span>
+                    </div>
+                    <div class="layui-col-md4" >
+                        <span>结束时间:</span><span>[[${#dates.format(test.endTime, 'yyyy-MM-dd HH:mm:ss')}]]</span>
+                    </div>
+                    <div class="layui-col-md2" >
+                        <span>总次数:</span><span th:text="${test.gridCount * test.times}"></span>
+                    </div>
+                </div>
+            </h2>
+            <div class="layui-colla-content">
+                <div class="layui-row layui-col-space10">
+                    <div class="layui-col-md7">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><h2>本次测试结果</h2></div>
+                            <div class="layui-card-body card1">
+                                加载中......
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md5">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><h2>本次测试概况</h2></div>
+                            <div class="layui-card-body card2">
+                                加载中......
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+    layui.use(['element', 'form'], function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var openData=[];
+        var closeData=[];
+        $(".testBtn").click(function() {
+            var testId=$(this).attr("testId");
+            console.log(testId);
+            $.ajax({
+                url: "/historyDetail",
+                contentType : 'application/json',
+                data:{
+                    "testId":testId
+                },
+                success: function(data){
+                    $(".card1").html(data);
+                    allFunction(testId,this);
+                },
+                error : function() {
+                    alert("error!");
+                }
+            });
+        });
+
+        function allFunction(testId,obj) {
+            $.ajax({
+                url: "/testSummary",
+                contentType : 'application/json',
+                data:{
+                    "testId":testId
+                },
+                success: function(data){
+                    $(".card2").html(data);
+                },
+                error : function() {
+                    alert("error!");
+                }
+            });
+        }
+
+    });
+</script>
+</body>
+</html>
